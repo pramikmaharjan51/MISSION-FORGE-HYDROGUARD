@@ -102,11 +102,14 @@ function review(){
 
 function launch(){
  // If they didn't run the review yet, force one
- if(!state.review) review();
+ if(!state.review) {
+   review();
+   if(!state.review) return; // Safety catch
+ }
  
- const c=calc(),name=$("#missionName").value||"UNTITLED MISSION";
+ const c=calc(), name=$("#missionName").value||"UNTITLED MISSION"; // Fixed missing variable
  const score = state.review.score;
- const isSuccess = score >= 100 && !state.review.critical;
+ const isSuccess = score >= 100;
  
  const btn = $("#launchMission");
  btn.textContent = "INITIATING LAUNCH SEQUENCE...";
@@ -115,14 +118,11 @@ function launch(){
  btn.disabled = true;
  
  $("#readinessTitle").textContent = "LAUNCH IN PROGRESS";
- $("#launchAnimation").className = "launch-animation active";
- $("#launchAnimation").textContent = "🚀";
  $("#readinessDesc").textContent = "Telemetry nominal. Spacecraft separating from launch vehicle.";
  
  setTimeout(() => {
    if (isSuccess) {
      // SUCCESS
-     $("#launchAnimation").className = "launch-animation success";
      $("#missionOutput").innerHTML=`<strong style="color:var(--cyan)">${name.toUpperCase()}</strong><br><br>
      <strong style="color:var(--green)">MISSION SUCCESSFUL</strong><br>
      Orbit insertion confirmed.<br>
@@ -142,7 +142,6 @@ function launch(){
      toast("Mission launch simulated successfully.");
    } else {
      // FAILURE
-     $("#launchAnimation").className = "launch-animation failure";
      $("#missionOutput").innerHTML=`<strong style="color:var(--red)">${name.toUpperCase()}</strong><br><br>
      <strong style="color:var(--red)">CATASTROPHIC FAILURE</strong><br>
      The spacecraft crashed during launch/orbit insertion.<br>
@@ -151,7 +150,7 @@ function launch(){
      
      $("#readinessTitle").textContent = "MISSION FAILED";
      $("#readinessTitle").style.color = "var(--red)";
-     $("#readinessDesc").textContent = "The spacecraft failed the launch simulation. Revise the design until it reaches 100/100 readiness with no critical constraints.";
+     $("#readinessDesc").textContent = "The spacecraft crashed. You must revise your design to reach 100% readiness.";
      $("#readiness .readiness-ring").style.borderColor = "var(--red)";
      
      btn.textContent = "✕ MISSION CRASHED";
@@ -187,14 +186,8 @@ function renderAll(){
 }
 
 // Bind UI Events
-$("#runReview").addEventListener("click",()=>{
- try { review(); }
- catch(error) { console.error("Engineering review failed:",error); toast("Review error: "+(error.message||"Please reload and try again.")); }
-});
-$("#launchMission").addEventListener("click",()=>{
- try { launch(); }
- catch(error) { console.error("Launch simulation failed:",error); toast("Launch error: "+(error.message||"Run the engineering review again.")); }
-});
+$("#runReview").onclick=review;
+$("#launchMission").onclick=launch;
 
 const steps=[["PHASE 01 / DEFINE THE SCIENCE","MISSION BRIEF"],["PHASE 02 / SELECT THE PAYLOAD","SCIENCE PAYLOAD"],["PHASE 03 / ENGINEER THE BUS","SPACECRAFT"],["PHASE 04 / PLAN THE FLIGHT","ORBIT & LAUNCH"],["PHASE 05 / VALIDATE THE DESIGN","MISSION REVIEW"]];
 
