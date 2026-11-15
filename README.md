@@ -1,4 +1,3 @@
-[README.md](https://github.com/user-attachments/files/34867084/README.md)
 # MISSION FORGE: HYDROGUARD
 **Adaptive Earth-observation mission design simulator**  
 NASA Space Apps Challenge 2026 — independent educational prototype

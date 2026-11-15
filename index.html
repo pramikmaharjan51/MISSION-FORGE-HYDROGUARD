@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="MISSION FORGE is an educational space mission design simulator featuring HydroGuard, an adaptive Earth-observation concept for water-stress monitoring using NASA POWER data.">
+<title>MISSION FORGE: HYDROGUARD — Adaptive Earth Observation Mission Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-mark">✦</span><span>MISSION<span class="brand-light">FORGE</span><small>SPACE MISSION DESIGN LAB</small></span></a>
+    <div class="top-status"><span class="live-dot"></span> SIMULATION ENVIRONMENT <span class="divider">/</span> HYDROGUARD BUILD 2.0</div>
+    <button class="btn btn-quiet" id="resetBtn">↺ RESET MISSION</button>
+  </header>
+
+  <main>
+    <section class="hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-line"></span> SPACE APPS CHALLENGE PROJECT</div>
+        <h1>DESIGN THE<br><em>NEXT</em> FRONTIER.</h1>
+        <p class="hero-intro">Design an adaptive Earth-observation mission to help communities spot water stress earlier. Explore NASA climate data, test spacecraft trade-offs, and turn observations into preparedness insights.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="beginBtn">ENTER MISSION CONTROL <span>↗</span></button>
+          <span class="micro-copy">EDUCATIONAL SIMULATION · NOT FLIGHT SOFTWARE</span>
+        </div>
+      </div>
+      <div class="orbit-panel">
+        <div class="panel-head"><span>ORBITAL VIEW / 01</span><span class="mono" id="missionClock">T+ 000:00:00</span></div>
+        <canvas id="orbitCanvas" aria-label="Animated orbital visualization"></canvas>
+        <div class="orbit-caption"><span><i class="legend earth"></i> EARTH</span><span><i class="legend orbit"></i> TRANSFER PATH</span><span><i class="legend craft"></i> SPACECRAFT</span></div>
+        <div class="orbit-coords mono">SIMULATION FRAME · HELIOCENTRIC / NOT TO SCALE</div>
+      </div>
+    </section>
+
+    <section class="workspace" id="workspace">
+      <aside class="side-nav">
+        <div class="side-label">MISSION WORKFLOW</div>
+        <button class="nav-step active" data-step="0"><b>01</b><span>Mission brief</span><i>●</i></button>
+        <button class="nav-step" data-step="1"><b>02</b><span>Science payload</span><i>●</i></button>
+        <button class="nav-step" data-step="2"><b>03</b><span>Spacecraft</span><i>●</i></button>
+        <button class="nav-step" data-step="3"><b>04</b><span>Orbit & launch</span><i>●</i></button>
+        <button class="nav-step" data-step="4"><b>05</b><span>Mission review</span><i>●</i></button>
+        <div class="side-foot">
+          <div class="side-label">MISSION STATUS</div>
+          <div class="status-chip" id="statusChip">● DESIGN IN PROGRESS</div>
+          <div class="progress-track"><div id="progressFill"></div></div>
+          <span class="mono tiny" id="progressText">0 / 5 SYSTEMS REVIEWED</span>
+        </div>
+      </aside>
+
+      <section class="work-area">
+        <div class="work-header">
+          <div><div class="eyebrow" id="stepEyebrow">PHASE 01 / DEFINE THE SCIENCE</div><h2 id="stepTitle">MISSION BRIEF</h2></div>
+          <div class="work-header-right"><span class="mono tiny">PROJECT ID: MF-2026-001</span><span class="difficulty">TRAINING SIMULATION</span></div>
+        </div>
+
+        <div class="step-panel active" data-panel="0">
+          <div class="section-intro"><h3>What question will your mission answer?</h3><p>Select a scientific objective. The target determines which instruments, orbit and mission architecture make sense.</p></div>
+          <div class="objective-grid">
+            <button class="objective-card selected" data-objective="earth"><span class="obj-icon">◉</span><span class="obj-tag">EARTH OBSERVATION</span><strong>Protect water security</strong><small>Monitor rainfall and temperature patterns to help identify emerging water-stress conditions.</small><span class="card-arrow">↗</span></button>
+            <button class="objective-card" data-objective="moon"><span class="obj-icon">◐</span><span class="obj-tag">PLANETARY SCIENCE</span><strong>Map the lunar surface</strong><small>Investigate surface features and mineral composition around the Moon.</small><span class="card-arrow">↗</span></button>
+            <button class="objective-card" data-objective="mars"><span class="obj-icon">◍</span><span class="obj-tag">PLANETARY SCIENCE</span><strong>Study Mars from orbit</strong><small>Observe surface geology and atmospheric conditions at Mars.</small><span class="card-arrow">↗</span></button>
+            <button class="objective-card" data-objective="deep"><span class="obj-icon">✧</span><span class="obj-tag">ASTRONOMY</span><strong>Observe distant galaxies</strong><small>Collect optical and infrared observations of distant astronomical targets.</small><span class="card-arrow">↗</span></button>
+          </div>
+          <div class="field-row">
+            <label>MISSION NAME<input id="missionName" maxlength="32" value="HYDROGUARD-01"></label>
+            <label>MISSION CLASS<select id="missionClass"><option value="explorer">Explorer · introductory</option><option value="engineer" selected>Engineer · intermediate</option><option value="director">Mission director · advanced</option></select></label>
+          </div>
+          <div class="science-note"><span>ⓘ SCIENCE NOTE</span><p id="objectiveNote">A proposed low-Earth-orbit mission combines precipitation, soil-moisture and thermal observations. This prototype uses NASA POWER precipitation and temperature data to demonstrate a transparent, preliminary water-stress signal; it is not an official drought forecast.</p></div>
+        </div>
+
+        <div class="step-panel" data-panel="1">
+          <div class="section-intro"><h3>Choose the science your spacecraft can perform.</h3><p>Each instrument adds capability, but also consumes mass, electrical power, budget and data storage.</p></div>
+          <div class="payload-layout">
+            <div class="instrument-list" id="instrumentList"></div>
+            <div class="payload-summary">
+              <div class="mini-head">PAYLOAD CONFIGURATION</div>
+              <div class="payload-visual" id="payloadVisual"><div class="payload-core">PAYLOAD<br>BUS</div></div>
+              <div class="payload-stats" id="payloadStats"></div>
+              <div class="mini-foot">Values are illustrative teaching parameters, not flight-qualified hardware specifications.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-panel" data-panel="2">
+          <div class="section-intro"><h3>Build a spacecraft around your payload.</h3><p>Configure the bus and supporting subsystems. The live dashboard recalculates the engineering envelope as you make changes.</p></div>
+          <div class="craft-layout">
+            <div class="craft-stage">
+              <div class="craft-stage-label">LIVE SPACECRAFT CONFIGURATION</div>
+              <div class="craft-illustration" id="craftIllustration">
+                <div class="solar left"></div><div class="solar right"></div><div class="antenna"></div><div class="craft-body"><div class="craft-window"></div><div class="craft-band"></div></div><div class="craft-boom"></div>
+              </div>
+              <div class="craft-caption">SCHEMATIC VIEW · COMPONENTS NOT TO SCALE</div>
+            </div>
+            <div class="config-controls">
+              <label>SPACECRAFT BUS<select id="busSelect"><option value="compact">Compact bus · 80 kg</option><option value="standard" selected>Standard bus · 120 kg</option><option value="heavy">High-capacity bus · 190 kg</option></select></label>
+              <label>POWER SYSTEM<select id="powerSelect"><option value="small">Compact solar array · 250 W</option><option value="medium" selected>Deployable solar array · 500 W</option><option value="large">High-output array · 850 W</option></select></label>
+              <label>COMMUNICATIONS<select id="commSelect"><option value="low">Low-gain antenna</option><option value="medium" selected>Medium-gain antenna</option><option value="high">High-gain antenna</option></select></label>
+              <label>PROPULSION<select id="propSelect"><option value="none">No dedicated propulsion</option><option value="chemical" selected>Chemical propulsion</option><option value="electric">Electric propulsion</option></select></label>
+              <div class="constraint-box" id="constraintBox"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-panel" data-panel="3">
+          <div class="section-intro"><h3>Choose how the mission gets there.</h3><p>Launch capacity and orbit shape mission feasibility. These simplified choices demonstrate constraints; they are not trajectory design tools.</p></div>
+          <div class="launch-grid">
+            <label class="select-card"><input type="radio" name="launch" value="small"><span class="select-card-content"><b>LIGHT LIFT</b><strong>Small launcher class</strong><small>Illustrative payload capacity: 300 kg</small><em>Lower cost · tighter mass limit</em></span></label>
+            <label class="select-card selected"><input type="radio" name="launch" value="medium" checked><span class="select-card-content"><b>MEDIUM LIFT</b><strong>Medium launcher class</strong><small>Illustrative payload capacity: 900 kg</small><em>Balanced cost and capacity</em></span></label>
+            <label class="select-card"><input type="radio" name="launch" value="heavy"><span class="select-card-content"><b>HEAVY LIFT</b><strong>Heavy launcher class</strong><small>Illustrative payload capacity: 2,000 kg</small><em>Higher cost · greater margin</em></span></label>
+          </div>
+          <div class="orbit-options">
+            <label>MISSION ORBIT<select id="orbitSelect"><option value="leo">Low Earth orbit</option><option value="geo">Geostationary orbit</option><option value="lunar">Lunar orbit</option><option value="mars">Mars transfer / orbit concept</option><option value="helio">Heliocentric observing orbit</option></select></label>
+            <label>MISSION DURATION<select id="durationSelect"><option value="1">1 year · short demonstration</option><option value="3" selected>3 years · baseline</option><option value="5">5 years · extended</option></select></label>
+            <label>MISSION BUDGET<select id="budgetSelect"><option value="8">8 credits · constrained</option><option value="12">12 credits · constrained</option><option value="18" selected>18 credits · expanded</option></select></label>
+          </div>
+          <div class="orbit-warning" id="orbitWarning">Orbit compatibility will be checked against your science objective.</div>
+        </div>
+
+        <div class="step-panel" data-panel="4">
+          <div class="section-intro"><h3>Is your mission ready to fly?</h3><p>Review the engineering envelope, resolve critical issues and evaluate the mission's expected learning outcomes.</p></div>
+          <div class="review-grid">
+            <div class="review-main">
+              <div class="readiness" id="readiness"><div class="readiness-ring"><strong id="readinessScore">--</strong><small>READINESS</small></div><div><span class="eyebrow">MISSION VALIDATION</span><h3 id="readinessTitle">Awaiting analysis</h3><p id="readinessDesc">Run the mission review to see whether your design satisfies its current constraints.</p></div></div>
+              <div id="issueList" class="issue-list"></div>
+              <button class="btn btn-primary review-button" id="runReview">RUN ENGINEERING REVIEW ↗</button>
+              <button class="btn btn-secondary review-button" id="launchMission" disabled>SIMULATE MISSION LAUNCH</button>
+            </div>
+            <div class="review-side">
+              <div class="mini-head">ENGINEERING ENVELOPE</div>
+              <div id="reviewMetrics"></div>
+              <div class="mini-head report-head">MISSION OUTPUT</div>
+              <div id="missionOutput" class="mission-output">Complete the review to generate a mission report.</div>
+              <button class="btn btn-quiet export-btn" id="exportBtn">↓ EXPORT MISSION REPORT (.JSON)</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-footer">
+          <button class="btn btn-quiet" id="backBtn" disabled>← PREVIOUS</button>
+          <div class="footer-hint mono" id="footerHint">SELECT A SCIENTIFIC OBJECTIVE TO BEGIN</div>
+          <button class="btn btn-primary" id="nextBtn">CONTINUE <span>→</span></button>
+        </div>
+      </section>
+    </section>
+  </main>
+  <section class="water-lab" id="waterLab">
+    <div class="water-heading">
+      <div><div class="eyebrow">MISSION FORGE / EARTH INTELLIGENCE</div><h2>HYDROGUARD <em>FIELD LAB</em></h2><p>Turn NASA Earth-observation data into a transparent early-warning prototype. Explore a location, inspect recent rainfall and temperature, then see how an adaptive satellite would prioritize its next observations.</p></div>
+      <div class="lab-stamp">PROTOTYPE<br>NOT AN OFFICIAL WARNING</div>
+    </div>
+    <div class="lab-controls">
+      <label>STUDY AREA<select id="studyArea"><option value="kathmandu">Kathmandu Valley, Nepal</option><option value="dhaka">Dhaka, Bangladesh</option><option value="nairobi">Nairobi, Kenya</option><option value="phoenix">Phoenix, USA</option></select></label>
+      <button class="btn btn-primary" id="loadEarthData">LOAD NASA EARTH DATA ↗</button>
+      <span id="dataStatus" class="data-status" aria-live="polite">Ready to request NASA POWER daily data.</span>
+    </div>
+    <div class="lab-metrics" id="labMetrics">
+      <article><small>30-DAY RAINFALL</small><strong>—</strong><span>mm · waiting for data</span></article>
+      <article><small>30-DAY MEAN TEMP</small><strong>—</strong><span>°C · waiting for data</span></article>
+      <article><small>RAIN CHANGE</small><strong>—</strong><span>vs previous 30 days</span></article>
+      <article><small>WATER-STRESS SIGNAL</small><strong>—</strong><span>prototype heuristic</span></article>
+    </div>
+    <div class="lab-grid">
+      <article class="lab-card"><div class="mini-head">ADAPTIVE OBSERVATION SCHEDULER</div><h3>What should the satellite look at next?</h3><p class="lab-copy">The scheduler reallocates a limited 100 observation credits using the measured conditions. This is a transparent planning heuristic, not an operational satellite command system.</p><div id="observationPlan" class="observation-plan"><div class="plan-row"><span>Precipitation change</span><b>Waiting for data</b></div><div class="plan-row"><span>Thermal stress</span><b>Waiting for data</b></div><div class="plan-row"><span>Surface water / soil moisture</span><b>Waiting for data</b></div></div></article>
+      <article class="lab-card"><div class="mini-head">THE INVENTION / DESIGN CONCEPT</div><h3>HydroGuard: a cooperative, adaptive satellite mission</h3><p class="lab-copy">A proposed small-satellite constellation would combine precipitation estimates, soil-moisture observations and thermal measurements. A ground-side planner would prioritize high-risk regions, request targeted revisits, and deliver simple, uncertainty-labelled information to local water managers.</p><ul class="innovation-list"><li><b>Adaptive revisit:</b> observation time shifts toward regions showing stronger change.</li><li><b>Store-and-forward:</b> satellites retain observations when a ground-station link is unavailable.</li><li><b>Community action layer:</b> data is translated into preparedness prompts, never automatic emergency declarations.</li><li><b>Open-data design:</b> NASA datasets provide a reproducible baseline for testing.</li></ul></article>
+    </div>
+    <div class="lab-footnote">DATA SOURCE: NASA POWER Daily API · PRECTOTCORR (corrected precipitation, mm/day) and T2M (2 m air temperature, °C). Data are gridded/model-assisted estimates, not a local rain-gauge reading. The signal compares two adjacent 30-day windows and must not be treated as a validated drought index or forecast. <a href="https://power.larc.nasa.gov/docs/services/api/temporal/daily/" target="_blank" rel="noopener">NASA POWER API documentation ↗</a></div>
+  </section>
+  <footer class="footer"><span>MISSION FORGE: HYDROGUARD © 2026 · OPEN EDUCATIONAL PROTOTYPE</span><span>INDEPENDENT STUDENT PROJECT · NOT AFFILIATED WITH OR ENDORSED BY NASA</span></footer>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script src="src/app.js"></script>
+</body>
+</html>
